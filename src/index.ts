@@ -77,30 +77,40 @@ export class Cowinator {
         return sessions
     }
 
-    async getStatsByDistrict(districtId: number) {
-        const sessions = await this.findByDistrict(districtId)
+    async getStatsByDistrict(districtId: number, date: Date = new Date()) {
+        const sessions = await this.findByDistrict(districtId, date)
         const stats: any = {
-            date: '',
+            date,
             state: '',
+            districtId,
             district: '',
             slotsAvailable: 0,
             byBlock: {},
             byFeeType: {},
             byAge: {},
             noOfCentersByAge: {},
+            noOfCentersWithSlotsByAge:{},
             byVaccine: {}
         }
         sessions.forEach(session => {
             const {
-                date,
                 state_name,
                 district_name,
                 block_name,
                 fee_type,
-                available_capacity,
                 min_age_limit,
                 vaccine
             } = session
+            let available_capacity = session.available_capacity > 0 ? session.available_capacity : 0
+            if (available_capacity === 0) {
+                if (session.available_capacity_dose1 > 0) {
+                    available_capacity += session.available_capacity_dose1
+                }
+                if (session.available_capacity_dose2 > 0) {
+                    available_capacity += session.available_capacity_dose2
+                }
+            }
+
             stats.date = date
             stats.state = state_name
             stats.district = district_name
@@ -109,6 +119,7 @@ export class Cowinator {
             stats.byFeeType = addToExisting(stats.byFeeType, fee_type, available_capacity)
             stats.byAge = addToExisting(stats.byAge, `${min_age_limit}+`, available_capacity)
             stats.noOfCentersByAge = addToExisting(stats.noOfCentersByAge, `${min_age_limit}+`, 1)
+            stats.noOfCentersWithSlotsByAge = addToExisting(stats.noOfCentersWithSlotsByAge, `${min_age_limit}+`, available_capacity > 0 ? 1 : 0)
             stats.byVaccine = addToExisting(stats.byVaccine, vaccine, available_capacity)
         })
         return stats
