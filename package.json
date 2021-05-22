@@ -2,6 +2,9 @@
   "name": "cowinator",
   "version": "1.0.0",
   "main": "build/index.js",
+  "bin": {
+    "cowinator": "build/cli/index.js"
+  },
   "repository": "https://github.com/hi-imcodeman/cowinator.git",
   "author": "Asraf Ali <asraf.cse@gmail.com>",
   "license": "MIT",
@@ -47,6 +50,8 @@
     "lunr": "^2.3.9",
     "messaging-api-telegram": "^1.0.4",
     "moment": "^2.29.1",
-    "node-notifier": "^9.0.1"
+    "node-notifier": "^9.0.1",
+    "ora": "^5.4.0",
+    "yargs": "^17.0.1"
   }
 }

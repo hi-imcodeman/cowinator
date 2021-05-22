@@ -178,9 +178,9 @@ export class Cowinator {
             noOfCentersByAge: {},
             noOfCentersWithSlotsByAge: {},
             byVaccine: {},
-            districtsFor18Plus:[]
+            districtsFor18Plus:null
         }
-        const districtsFor18Plus: any[] = []
+        const districtsFor18Plus:any = {}
         results.forEach(result => {
             if (result.district) {
                 stats.date = result.date
@@ -191,11 +191,9 @@ export class Cowinator {
                     noOfCentersByAge: result.noOfCentersByAge,
                     noOfCentersWithSlotsByAge: result.noOfCentersWithSlotsByAge
                 })
+                
                 if (result.noOfCentersWithSlotsByAge['18+']) {
-                    districtsFor18Plus.push({
-                        district: result.district,
-                        count: result.noOfCentersWithSlotsByAge['18+']
-                    })
+                    districtsFor18Plus[result.district]=result.noOfCentersWithSlotsByAge['18+']
                 }
 
                 groupedStats(stats.byFeeType, result.byFeeType)
