@@ -81,34 +81,34 @@ export class Cowinator {
 
     async findStateByName(query: string) {
         const states = await this.getStates()
-        const idx = lunr(function(){
+        const idx = lunr(function () {
             this.field('state_name')
             this.field('state_id')
-            states.forEach((state,id)=>{
-                this.add({...state,id})
+            states.forEach((state, id) => {
+                this.add({ ...state, id })
             })
         })
         const result = idx.search(query)
-        if(result.length){
-            const {ref} = result[0]
-           return states[Number(ref)]
+        if (result.length) {
+            const { ref } = result[0]
+            return states[Number(ref)]
         }
         return null
     }
 
-    async findDistrictByName(stateId:number,query:string){
+    async findDistrictByName(stateId: number, query: string) {
         const districts = await this.getDistricts(stateId)
-        const idx = lunr(function(){
+        const idx = lunr(function () {
             this.field('district_name')
             this.field('district_id')
-            districts.forEach((district,id)=>{
-                this.add({...district,id})
+            districts.forEach((district, id) => {
+                this.add({ ...district, id })
             })
         })
         const result = idx.search(query)
-        if(result.length){
-            const {ref} = result[0]
-           return districts[Number(ref)]
+        if (result.length) {
+            const { ref } = result[0]
+            return districts[Number(ref)]
         }
         return null
     }
@@ -126,24 +126,32 @@ export class Cowinator {
             byAge: {},
             noOfCentersByAge: {},
             noOfCentersWithSlotsByAge: {},
-            byVaccine: {}
+            byVaccine: {},
+            centersFor18Plus: {}
         }
+        
         sessions.forEach(session => {
             const {
+                center_id,
+                name,
+                address,
                 state_name,
                 district_name,
                 block_name,
+                pincode,
                 fee_type,
+                available_capacity_dose1,
+                available_capacity_dose2,
                 min_age_limit,
                 vaccine
             } = session
             let available_capacity = session.available_capacity > 0 ? session.available_capacity : 0
             if (available_capacity === 0) {
-                if (session.available_capacity_dose1 > 0) {
-                    available_capacity += session.available_capacity_dose1
+                if (available_capacity_dose1 > 0) {
+                    available_capacity += available_capacity_dose1
                 }
                 if (session.available_capacity_dose2 > 0) {
-                    available_capacity += session.available_capacity_dose2
+                    available_capacity += available_capacity_dose2
                 }
             }
 
@@ -157,11 +165,23 @@ export class Cowinator {
             stats.noOfCentersByAge = addToExisting(stats.noOfCentersByAge, `${min_age_limit}+`, 1)
             stats.noOfCentersWithSlotsByAge = addToExisting(stats.noOfCentersWithSlotsByAge, `${min_age_limit}+`, available_capacity > 0 ? 1 : 0)
             stats.byVaccine = addToExisting(stats.byVaccine, vaccine, available_capacity)
+            if (min_age_limit === 18) {
+                stats.centersFor18Plus = addToExisting(stats.centersFor18Plus, center_id, {
+                    name,
+                    address,
+                    block_name,
+                    district_name,
+                    pincode,
+                    available_capacity,
+                    available_capacity_dose1,
+                    available_capacity_dose2
+                })
+            }
         })
         return stats
     }
 
-    async getStatsByState(stateId:number,date:Date=new Date()){
+    async getStatsByState(stateId: number, date: Date = new Date()) {
         const districts = await this.getDistricts(stateId)
         const promises = districts.map(async ({ district_id }) => {
             return this.getStatsByDistrict(district_id, date)
@@ -178,9 +198,9 @@ export class Cowinator {
             noOfCentersByAge: {},
             noOfCentersWithSlotsByAge: {},
             byVaccine: {},
-            districtsFor18Plus:null
+            districtsFor18Plus: null
         }
-        const districtsFor18Plus:any = {}
+        const districtsFor18Plus: any = {}
         results.forEach(result => {
             if (result.district) {
                 stats.date = result.date
@@ -191,9 +211,9 @@ export class Cowinator {
                     noOfCentersByAge: result.noOfCentersByAge,
                     noOfCentersWithSlotsByAge: result.noOfCentersWithSlotsByAge
                 })
-                
+
                 if (result.noOfCentersWithSlotsByAge['18+']) {
-                    districtsFor18Plus[result.district]=result.noOfCentersWithSlotsByAge['18+']
+                    districtsFor18Plus[result.district] = result.noOfCentersWithSlotsByAge['18+']
                 }
 
                 groupedStats(stats.byFeeType, result.byFeeType)
