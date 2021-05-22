@@ -28,7 +28,7 @@ const getStats = async (argv: any) => {
                 }
             }
             let stats = null
-            let tgMessages: string[] = ['<b>Cowin Stats</b>\n']
+            const tgMessages: string[] = ['<b>Cowin Stats</b>\n']
             if (matchedDistrict) {
                 stats = await cowin.getStatsByDistrict(matchedDistrict.district_id)
                 tgMessages.push(`<b>Date:</b> ${new Date(stats.date).toLocaleDateString()}`)
