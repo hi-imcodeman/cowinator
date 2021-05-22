@@ -1,5 +1,7 @@
 import axios from 'axios'
 import moment from 'moment'
+import lunr from 'lunr'
+
 export interface State {
     state_id: number
     state_name: string
@@ -77,6 +79,40 @@ export class Cowinator {
         return sessions
     }
 
+    async findStateByName(query: string) {
+        const states = await this.getStates()
+        const idx = lunr(function(){
+            this.field('state_name')
+            this.field('state_id')
+            states.forEach((state,id)=>{
+                this.add({...state,id})
+            })
+        })
+        const result = idx.search(query)
+        if(result.length){
+            const {ref} = result[0]
+           return states[Number(ref)]
+        }
+        return null
+    }
+
+    async findDistrictByName(stateId:number,query:string){
+        const districts = await this.getDistricts(stateId)
+        const idx = lunr(function(){
+            this.field('district_name')
+            this.field('district_id')
+            districts.forEach((district,id)=>{
+                this.add({...district,id})
+            })
+        })
+        const result = idx.search(query)
+        if(result.length){
+            const {ref} = result[0]
+           return districts[Number(ref)]
+        }
+        return null
+    }
+
     async getStatsByDistrict(districtId: number, date: Date = new Date()) {
         const sessions = await this.findByDistrict(districtId, date)
         const stats: any = {
@@ -89,7 +125,7 @@ export class Cowinator {
             byFeeType: {},
             byAge: {},
             noOfCentersByAge: {},
-            noOfCentersWithSlotsByAge:{},
+            noOfCentersWithSlotsByAge: {},
             byVaccine: {}
         }
         sessions.forEach(session => {
@@ -122,6 +158,54 @@ export class Cowinator {
             stats.noOfCentersWithSlotsByAge = addToExisting(stats.noOfCentersWithSlotsByAge, `${min_age_limit}+`, available_capacity > 0 ? 1 : 0)
             stats.byVaccine = addToExisting(stats.byVaccine, vaccine, available_capacity)
         })
+        return stats
+    }
+
+    async getStatsByState(stateId:number,date:Date=new Date()){
+        const districts = await this.getDistricts(stateId)
+        const promises = districts.map(async ({ district_id }) => {
+            return this.getStatsByDistrict(district_id, date)
+        })
+        const results = await Promise.all(promises)
+
+        const stats: any = {
+            date: '',
+            state: '',
+            slotsAvailable: 0,
+            byDistrict: {},
+            byFeeType: {},
+            byAge: {},
+            noOfCentersByAge: {},
+            noOfCentersWithSlotsByAge: {},
+            byVaccine: {},
+            districtsFor18Plus:[]
+        }
+        const districtsFor18Plus: any[] = []
+        results.forEach(result => {
+            if (result.district) {
+                stats.date = result.date
+                stats.state = result.state
+                stats.slotsAvailable += result.slotsAvailable
+                stats.byDistrict = addToExisting(stats.byDistrict, result.district, {
+                    slotsAvailable: result.slotsAvailable,
+                    noOfCentersByAge: result.noOfCentersByAge,
+                    noOfCentersWithSlotsByAge: result.noOfCentersWithSlotsByAge
+                })
+                if (result.noOfCentersWithSlotsByAge['18+']) {
+                    districtsFor18Plus.push({
+                        district: result.district,
+                        count: result.noOfCentersWithSlotsByAge['18+']
+                    })
+                }
+
+                groupedStats(stats.byFeeType, result.byFeeType)
+                groupedStats(stats.byAge, result.byAge)
+                groupedStats(stats.noOfCentersByAge, result.noOfCentersByAge)
+                groupedStats(stats.noOfCentersWithSlotsByAge, result.noOfCentersWithSlotsByAge)
+                groupedStats(stats.byVaccine, result.byVaccine)
+            }
+        })
+        stats.districtsFor18Plus = districtsFor18Plus
         return stats
     }
 }
