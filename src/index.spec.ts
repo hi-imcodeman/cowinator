@@ -50,5 +50,6 @@ describe('class: Cowinator', () => {
         const stats = await client.getStatsByState(stateMatch!.state_id)
         expect(stats.state).toBe('Tamil Nadu')
         expect(stats.districtsFor18Plus).toBeDefined()
+        done()
     })
 })
