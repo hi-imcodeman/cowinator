@@ -13,7 +13,12 @@ const cowin = new Cowinator()
 
 export const getStats = async (argv: any) => {
     try {
-        const { state, district, tgChannel } = argv
+        const { state, district, tgChannel, d } = argv
+        let date=new Date()
+        if(d){
+            date = new Date(d)
+        }
+        const symbolFor18Plus = '&#9989;'
         const matchedState = await cowin.findStateByName(state)
         if (matchedState) {
             let matchedDistrict = null
@@ -24,9 +29,10 @@ export const getStats = async (argv: any) => {
                 }
             }
             let stats = null
-            const tgMessages: string[] = ['<b>Cowin Stats</b>\n']
+            const tgMessages: string[] = []
             if (matchedDistrict) {
-                stats = await cowin.getStatsByDistrict(matchedDistrict.district_id)
+                stats = await cowin.getStatsByDistrict(matchedDistrict.district_id,date)
+                tgMessages.push(`&#128137;<b>Cowin Stats - ${stats.district}, ${stats.state}</b>\n`)
                 tgMessages.push(`<b>Date:</b> ${new Date(stats.date).toLocaleDateString()}`)
                 tgMessages.push(`<b>State:</b> ${stats.state}`)
                 tgMessages.push(`<b>District:</b> ${stats.district}`)
@@ -41,16 +47,19 @@ export const getStats = async (argv: any) => {
                 Object.entries(stats.centersFor18Plus).forEach(([_, value]) => {
                     const centerStats = value as any
                     if (centerStats.available_capacity > 0) {
-                        tgMessages.push(`\n<b>${centerStats.name}</b> (${centerStats.available_capacity})&#9989;`)
+                        tgMessages.push(`\n${symbolFor18Plus}<b>${centerStats.name}</b>`)
                         tgMessages.push(`${centerStats.address}`)
                         tgMessages.push(`${centerStats.block_name}`)
                         tgMessages.push(`${centerStats.district_name}`)
                         tgMessages.push(`${centerStats.pincode}`)
+                        tgMessages.push(`<b>Available Slots:</b> ${centerStats.available_capacity}`)
+                        tgMessages.push(`<b>Fee Type:</b> ${centerStats.fee_type}`)
                     }
-
                 })
+                tgMessages.push(`\n${symbolFor18Plus} - Has slots for 18+\n`)
             } else {
-                stats = await cowin.getStatsByState(matchedState.state_id)
+                stats = await cowin.getStatsByState(matchedState.state_id,date)
+                tgMessages.push(`&#128137;<b>Cowin Stats - ${stats.state}</b>\n`)
                 tgMessages.push(`<b>Date:</b> ${new Date(stats.date).toLocaleDateString()}`)
                 tgMessages.push(`<b>State:</b> ${stats.state}`)
                 tgMessages.push(`<b>Total Slots available:</b> ${stats.slotsAvailable}`)
@@ -64,9 +73,10 @@ export const getStats = async (argv: any) => {
                 Object.entries(stats.byDistrict).forEach(([districtName, value]) => {
                     const districtStats = value as any
                     const is18Plus = districtStats.noOfCentersByAge['18+'] !== undefined
-                    const for18Plus = is18Plus ? ` (&#9989;18+)` : ''
+                    const for18Plus = is18Plus ? ` ${symbolFor18Plus}` : ''
                     tgMessages.push(`<b>${districtName}:</b> ${districtStats.slotsAvailable}${for18Plus}`)
                 })
+                tgMessages.push(`\n${symbolFor18Plus} - Has centers for 18+\n`)
             }
 
             console.log(stats)

@@ -140,6 +140,7 @@ export class Cowinator {
                 block_name,
                 pincode,
                 fee_type,
+                fee,
                 available_capacity_dose1,
                 available_capacity_dose2,
                 min_age_limit,
@@ -167,6 +168,8 @@ export class Cowinator {
             stats.byVaccine = addToExisting(stats.byVaccine, vaccine, available_capacity)
             if (min_age_limit === 18) {
                 stats.centersFor18Plus = addToExisting(stats.centersFor18Plus, center_id, {
+                    fee_type,
+                    fee,
                     name,
                     address,
                     block_name,

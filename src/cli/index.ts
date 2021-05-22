@@ -12,6 +12,7 @@ const _argv = yargs
         })
     }, getStats)
     .option('district', {
+        alias: 'dt',
         type: 'string',
         describe: 'Name of the district'
     })
@@ -19,5 +20,10 @@ const _argv = yargs
         alias: 'tgChannel',
         type: 'string',
         describe: 'Name of the Telegram channel Ex. "@channelname"'
+    })
+    .option('date', {
+        alias: 'd',
+        type: 'string',
+        describe: 'Date in the format of "MM-DD-YYYY" (Ex. "22-05-2021")'
     })
     .argv
