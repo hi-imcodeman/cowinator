@@ -54,5 +54,18 @@
     "node-notifier": "^9.0.1",
     "ora": "^5.4.0",
     "yargs": "^17.0.1"
-  }
+  },
+  "keywords": [
+    "cowin",
+    "vaccine",
+    "india",
+    "covid",
+    "corona",
+    "stats",
+    "slots",
+    "telegram",
+    "cli",
+    "api",
+    "cowinator"
+  ]
 }

@@ -36,7 +36,7 @@ export interface Session {
     slots: string[]
 }
 
-export const addToExisting = (obj: any, key: any, value: any) => {
+const addToExisting = (obj: any, key: any, value: any) => {
     if (obj[key] && !isNaN(obj[key]))
         obj[key] += value
     else
@@ -44,7 +44,7 @@ export const addToExisting = (obj: any, key: any, value: any) => {
     return obj
 }
 
-export const groupedStats = (obj: any, data: any) => {
+const groupedStats = (obj: any, data: any) => {
     Object.entries(data).forEach(([key, value]) => {
         obj = addToExisting(obj, key, value as number)
     })

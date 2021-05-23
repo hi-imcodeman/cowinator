@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>typescript-template - v1.2.0</title>
-	<meta name="description" content="Documentation for typescript-template - v1.2.0">
+	<title>cowinator - v1.0.0</title>
+	<meta name="description" content="Documentation for cowinator - v1.0.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
 	<script async src="assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">typescript-template - v1.2.0</a>
+					<a href="index.html" class="title">cowinator - v1.0.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -50,7 +50,7 @@
 	</div>
 	<div class="tsd-page-title">
 		<div class="container">
-			<h1>typescript-template - v1.2.0</h1>
+			<h1>cowinator - v1.0.0</h1>
 		</div>
 	</div>
 </header>
@@ -58,17 +58,85 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<a href="#typescript-template" id="typescript-template" style="color: inherit; text-decoration: none;">
-					<h1>Typescript Template</h1>
+				<a href="#cowin-ator" id="cowin-ator" style="color: inherit; text-decoration: none;">
+					<h1>CoWin-ator</h1>
 				</a>
-				<p>This is the template repo of typescript project.</p>
-				<p>Download this repo and start using it as base template of your project.</p>
-				<p>Pre-installed and confiured with followings:</p>
-				<ul>
-					<li><a href="https://www.typescriptlang.org/">Typescript</a></li>
-					<li><a href="https://jestjs.io/">Jest</a></li>
-					<li><a href="https://webpack.js.org/">Webpack</a></li>
-				</ul>
+				<p>This is the package to get Cowin slots and stats by state/district.</p>
+				<p>Please refer <a href="https://hi-imcodeman.github.io/cowinator">API Documentation</a> here.</p>
+				<p><a href="https://nodei.co/npm/cowinator/"><img src="https://nodei.co/npm/cowinator.png" alt="NPM"></a></p>
+				<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+					<h2>Installation</h2>
+				</a>
+				<p>Install using &#39;npm&#39;</p>
+				<pre><code class="language-sh"><span style="color: #000000">npm i cowinator</span>
+</code></pre>
+				<p>Install using &#39;yarn&#39;</p>
+				<pre><code class="language-sh"><span style="color: #000000">yarn add cowinator</span>
+</code></pre>
+				<a href="#development-usage" id="development-usage" style="color: inherit; text-decoration: none;">
+					<h2>Development Usage</h2>
+				</a>
+				<pre><code class="language-javascript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Cowinator</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;cowinator&quot;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">client</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Cowinator</span><span style="color: #000000">();</span>
+
+<span style="color: #008000">// List of states having state_id and state_name</span>
+<span style="color: #001080">client</span><span style="color: #000000">.</span><span style="color: #795E26">getStates</span><span style="color: #000000">().</span><span style="color: #795E26">then</span><span style="color: #000000">((</span><span style="color: #001080">states</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">states</span><span style="color: #000000">);</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #008000">// List of districts having district_id and district_name</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">state_id</span><span style="color: #000000"> = </span><span style="color: #098658">2</span><span style="color: #000000">; </span><span style="color: #008000">// state_d:2 for &#039;Andhra Pradesh&#039;</span>
+<span style="color: #001080">client</span><span style="color: #000000">.</span><span style="color: #795E26">getDistricts</span><span style="color: #000000">(</span><span style="color: #001080">state_id</span><span style="color: #000000">).</span><span style="color: #795E26">then</span><span style="color: #000000">((</span><span style="color: #001080">districts</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">districts</span><span style="color: #000000">);</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #008000">// Get stats for specified state</span>
+<span style="color: #001080">client</span><span style="color: #000000">.</span><span style="color: #795E26">getStatsByState</span><span style="color: #000000">(</span><span style="color: #001080">state_id</span><span style="color: #000000">).</span><span style="color: #795E26">then</span><span style="color: #000000">((</span><span style="color: #001080">stats</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">stats</span><span style="color: #000000">);</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">district_id</span><span style="color: #000000"> = </span><span style="color: #098658">571</span><span style="color: #000000">; </span><span style="color: #008000">// district_id:571 for &#039;Chennai&#039;</span>
+<span style="color: #008000">// Get stats for specified state</span>
+<span style="color: #001080">client</span><span style="color: #000000">.</span><span style="color: #795E26">getStatsByDistrict</span><span style="color: #000000">(</span><span style="color: #001080">district_id</span><span style="color: #000000">).</span><span style="color: #795E26">then</span><span style="color: #000000">((</span><span style="color: #001080">stats</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">stats</span><span style="color: #000000">);</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #008000">// Get list of sessions for a district</span>
+<span style="color: #001080">client</span><span style="color: #000000">.</span><span style="color: #795E26">findByDistrict</span><span style="color: #000000">(</span><span style="color: #001080">district_id</span><span style="color: #000000">).</span><span style="color: #795E26">then</span><span style="color: #000000">((</span><span style="color: #001080">sessions</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">sessions</span><span style="color: #000000">);</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #008000">// Find state_id by search string</span>
+<span style="color: #001080">client</span><span style="color: #000000">.</span><span style="color: #795E26">findStateByName</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;tamil&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">then</span><span style="color: #000000">((</span><span style="color: #001080">matchedState</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">matchedState</span><span style="color: #000000">); </span><span style="color: #008000">// Will get state_id and state_name for &#039;tamil nadu&#039;</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #008000">// Find state_id by search string</span>
+<span style="color: #001080">client</span><span style="color: #000000">.</span><span style="color: #795E26">findDistrictByName</span><span style="color: #000000">(</span><span style="color: #001080">state_id</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;east&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">then</span><span style="color: #000000">((</span><span style="color: #001080">matchedDistrict</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">matchedDistrict</span><span style="color: #000000">); </span><span style="color: #008000">// Will get district_id and district_name for &#039;East Godavari&#039;</span>
+<span style="color: #000000">});</span>
+</code></pre>
+				<a href="#cli" id="cli" style="color: inherit; text-decoration: none;">
+					<h2>CLI</h2>
+				</a>
+				<p>We can use this package in CLI.</p>
+				<p>Install for CLI</p>
+				<pre><code class="language-sh"><span style="color: #000000">npm i -g cowinator</span>
+</code></pre>
+				<a href="#cli-usage" id="cli-usage" style="color: inherit; text-decoration: none;">
+					<h3>CLI Usage</h3>
+				</a>
+				<p>To get the stats for a state</p>
+				<pre><code class="language-sh"><span style="color: #000000">cowinator andhra</span>
+</code></pre>
+				<p>To get the stats for a particular district in a state</p>
+				<pre><code class="language-sh"><span style="color: #000000">cowinator </span><span style="color: #A31515">&quot;tamil nadu&quot;</span><span style="color: #000000"> --district chennai</span>
+</code></pre>
+				<p>To post the stats to the telegram channel.</p>
+				<p><code>Note: Please assign your bot token to &#39;TELEGRAM_BOT_TOKEN&#39; as environment variable.</code></p>
+				<pre><code class="language-sh"><span style="color: #000000">cowinator </span><span style="color: #A31515">&quot;tamil nadu&quot;</span><span style="color: #000000"> --district chennai --tgChannel </span><span style="color: #A31515">&quot;@channelname&quot;</span>
+</code></pre>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -82,7 +150,16 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-class">
-						<a href="classes/default.html" class="tsd-kind-icon">default</a>
+						<a href="classes/cowinator.html" class="tsd-kind-icon">Cowinator</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/district.html" class="tsd-kind-icon">District</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/session.html" class="tsd-kind-icon">Session</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/state.html" class="tsd-kind-icon">State</a>
 					</li>
 				</ul>
 			</nav>
@@ -95,7 +172,11 @@
 		<div class="tsd-legend-group">
 			<ul class="tsd-legend">
 				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 			</ul>
 		</div>
 	</div>

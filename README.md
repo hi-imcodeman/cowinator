@@ -20,38 +20,6 @@ Install using 'yarn'
 yarn add cowinator
 ```
 
-## CLI
-
-We can use this package in CLI.
-
-Install for CLI
-
-```sh
-npm i -g cowinator
-```
-
-### CLI Usage
-
-To get the stats for a state
-
-```sh
-cowinator andhra
-```
-
-To get the stats for a particular district in a state
-
-```sh
-cowinator "tamil nadu" --district chennai
-```
-
-To post the stats to the telegram channel.
-
-`Note: Please assign your bot token to 'TELEGRAM_BOT_TOKEN' as environment variable.`
-
-```sh
-cowinator "tamil nadu" --district chennai --tgChannel "@channelname"
-```
-
 ## Development Usage
 
 ```javascript
@@ -95,4 +63,36 @@ client.findStateByName("tamil").then((matchedState) => {
 client.findDistrictByName(state_id, "east").then((matchedDistrict) => {
   console.log(matchedDistrict); // Will get district_id and district_name for 'East Godavari'
 });
+```
+
+## CLI
+
+We can use this package in CLI.
+
+Install for CLI
+
+```sh
+npm i -g cowinator
+```
+
+### CLI Usage
+
+To get the stats for a state
+
+```sh
+cowinator andhra
+```
+
+To get the stats for a particular district in a state
+
+```sh
+cowinator "tamil nadu" --district chennai
+```
+
+To post the stats to the telegram channel.
+
+`Note: Please assign your bot token to 'TELEGRAM_BOT_TOKEN' as environment variable.`
+
+```sh
+cowinator "tamil nadu" --district chennai --tgChannel "@channelname"
 ```
