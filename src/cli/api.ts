@@ -32,7 +32,7 @@ export const getStats = async (argv: any) => {
             const tgMessages: string[] = []
             if (matchedDistrict) {
                 stats = await cowin.getStatsByDistrict(matchedDistrict.district_id,date)
-                tgMessages.push(`&#128137;<b>Cowin Stats - ${stats.district}, ${stats.state}</b>\n`)
+                tgMessages.push(`&#128137;<b>Cowin Stats - ${matchedDistrict.district_name}, ${stats.state}</b>\n`)
                 tgMessages.push(`<b>Date:</b> ${new Date(stats.date).toLocaleDateString()}`)
                 tgMessages.push(`<b>State:</b> ${stats.state}`)
                 tgMessages.push(`<b>District:</b> ${stats.district}`)
