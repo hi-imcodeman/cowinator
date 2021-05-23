@@ -129,7 +129,7 @@ export class Cowinator {
             byVaccine: {},
             centersFor18Plus: {}
         }
-        
+
         sessions.forEach(session => {
             const {
                 center_id,

@@ -27,3 +27,4 @@ const _argv = yargs
         describe: 'Date in the format of "MM-DD-YYYY" (Ex. "22-05-2021")'
     })
     .argv
+    
