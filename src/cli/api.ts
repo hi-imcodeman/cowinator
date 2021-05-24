@@ -14,8 +14,8 @@ const cowin = new Cowinator()
 export const getStats = async (argv: any) => {
     try {
         const { state, district, tgChannel, d } = argv
-        let date=new Date()
-        if(d){
+        let date = new Date()
+        if (d) {
             date = new Date(d)
         }
         const symbolFor18Plus = '&#9989;'
@@ -31,7 +31,7 @@ export const getStats = async (argv: any) => {
             let stats = null
             const tgMessages: string[] = []
             if (matchedDistrict) {
-                stats = await cowin.getStatsByDistrict(matchedDistrict.district_id,date)
+                stats = await cowin.getStatsByDistrict(matchedDistrict.district_id, date)
                 tgMessages.push(`&#128137;<b>Cowin Stats - ${matchedDistrict.district_name}, ${stats.state}</b>\n`)
                 tgMessages.push(`<b>Date:</b> ${new Date(stats.date).toLocaleDateString()}`)
                 tgMessages.push(`<b>State:</b> ${stats.state}`)
@@ -58,7 +58,7 @@ export const getStats = async (argv: any) => {
                 })
                 tgMessages.push(`\n${symbolFor18Plus} - Has slots for 18+\n`)
             } else {
-                stats = await cowin.getStatsByState(matchedState.state_id,date)
+                stats = await cowin.getStatsByState(matchedState.state_id, date)
                 tgMessages.push(`&#128137;<b>Cowin Stats - ${stats.state}</b>\n`)
                 tgMessages.push(`<b>Date:</b> ${new Date(stats.date).toLocaleDateString()}`)
                 tgMessages.push(`<b>State:</b> ${stats.state}`)
@@ -94,7 +94,84 @@ export const getStats = async (argv: any) => {
             console.log(`Entered state "${state}" not matched with CoWin state list.`);
         }
     } catch (error) {
-        console.error(error.message)
-        console.log('Try after sometime.')
+        console.error(error)
+        if (process.env.TELEGRAM_BOT_TOKEN) {
+            const tgClient = new TelegramClient({ accessToken: process.env.TELEGRAM_BOT_TOKEN })
+            tgClient.sendMessage('@cowinatortest', `&#10060; <b>Error - Get Stats\n\nError:</b> ${error.message}\n\n${JSON.stringify(argv)}`,{ parseMode: ParseMode.HTML })
+        }
+    }
+}
+
+export const getSlotsFor18Plus = async (argv: any) => {
+    try {
+        const { state, district, tgChannel, d } = argv
+        let date = new Date()
+        if (d) {
+            date = new Date(d)
+        }
+        const symbolFor18Plus = '&#9989;'
+        const matchedState = await cowin.findStateByName(state)
+        if (matchedState) {
+            let matchedDistrict = null
+            if (district) {
+                matchedDistrict = await cowin.findDistrictByName(matchedState.state_id, district)
+                if (matchedDistrict === null) {
+                    console.log(`Entered district "${district}" not matched with CoWin distict list of "${matchedState.state_name}".`);
+                }
+            }
+            let for18Plus = null
+            const tgMessages: string[] = []
+            if (matchedDistrict) {
+                console.log('Fetching for', matchedDistrict.district_name);
+                for18Plus = await cowin.getAvailabilityFor18Plus(matchedDistrict.district_id, date)
+                if (for18Plus.availableCentersFor18Plus.length) {
+                    tgMessages.push(`${symbolFor18Plus}<b>Vaccine availability (18+) - ${matchedDistrict.district_name}, ${matchedState.state_name}</b>\n`)
+                    for18Plus.availableCentersFor18Plus.forEach(center => {
+                        tgMessages.push(`&#128073;<b><u>${center.name}</u></b>`)
+                        tgMessages.push(`${center.address}`)
+                        tgMessages.push(`${center.block_name} - ${center.pincode}`)
+                        if (center.vaccine_fees && center.vaccine_fees.length && center.fee_type === 'Paid') {
+                            tgMessages.push(`<b>Fees:</b> ${center.vaccine_fees.map((item: { vaccine: string; fee: string }) => item.vaccine + ' - Rs.' + item.fee).join(', ')}\n`)
+                        } else {
+                            tgMessages.push(`<b>Type:</b> ${center.fee_type}\n`)
+                        }
+
+                        center.sessions.forEach((session: any) => {
+                            if (session.available_capacity > 0) {
+                                tgMessages.push(`<b><u>${session.date}:</u></b> ${session.available_capacity} (${session.vaccine})`)
+                            }
+                        })
+                        tgMessages.push(`\n`)
+                    })
+                } else {
+                    // tgMessages.push(`&#10060;<b>Vaccine availability (18+) - ${matchedDistrict.district_name}, ${matchedState.state_name}</b>\n`)
+                    // tgMessages.push(`As of now, No slots available for 18+ at <b>${matchedDistrict.district_name}, ${matchedState.state_name}</b>\n`)
+                }
+            }
+
+            console.log({
+                district: matchedDistrict?.district_name,
+                noCenters: for18Plus?.centerFor18Plus.length,
+                noAvalableCenters: for18Plus?.availableCentersFor18Plus.length
+            })
+            if (tgMessages.length && tgChannel) {
+                if (process.env.TELEGRAM_BOT_TOKEN) {
+                    tgMessages.push(`\n<i>Pulled at: ${new Date()}</i>`)
+                    const tgClient = new TelegramClient({ accessToken: process.env.TELEGRAM_BOT_TOKEN })
+                    await tgClient.sendMessage(tgChannel, tgMessages.join('\n'), { parseMode: ParseMode.HTML })
+                    console.log(`Message sent to telegram channel "${tgChannel}".`);
+                } else {
+                    console.log(`"TELEGRAM_BOT_TOKEN" environmental variable not available.`);
+                }
+            }
+        } else {
+            console.log(`Entered state "${state}" not matched with CoWin state list.`);
+        }
+    } catch (error) {
+        console.error(error)
+        if (process.env.TELEGRAM_BOT_TOKEN) {
+            const tgClient = new TelegramClient({ accessToken: process.env.TELEGRAM_BOT_TOKEN })
+            tgClient.sendMessage('@cowinatortest', `&#10060; <b>Error - Get Slots for 18+\n\nError:</b> ${error.message}\n\n${JSON.stringify(argv)}`,{ parseMode: ParseMode.HTML })
+        }
     }
 }

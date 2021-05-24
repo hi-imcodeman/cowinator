@@ -21,6 +21,18 @@ describe('class: Cowinator', () => {
         done()
     })
 
+    test('findCalenderByDistrict', async (done) => {
+        const centers = await client.findCalenderByDistrict(571)
+        expect(centers.length).toBeGreaterThan(1)
+        done()
+    })
+
+    test('getAvailabilityFor18Plus', async (done) => {
+        const availablity = await client.getAvailabilityFor18Plus(571)
+        expect(availablity.centerFor18Plus.length).toBeGreaterThan(1)
+        done()
+    })
+
     test('getStatsByDistrict', async (done) => {
         const stats = await client.getStatsByDistrict(576)
         expect(stats.state).toBe('Tamil Nadu')
@@ -44,7 +56,7 @@ describe('class: Cowinator', () => {
         expect(districtMatch!.district_name).toBe('Nagapattinam')
         done()
     })
-    
+
     test('get stats for whole state', async (done) => {
         const stateMatch = await client.findStateByName('tamil')
         const stats = await client.getStatsByState(stateMatch!.state_id)

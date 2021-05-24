@@ -1,16 +1,23 @@
 #!/usr/bin/env node
 
 import yargs from 'yargs'
-import { getStats } from './api'
+import { getStats, getSlotsFor18Plus } from './api'
 
 const _argv = yargs
-    .command('$0 <state>', 'To get the stats', (yargsBuilder: any) => {
+    .command('stats <state>', 'To get the stats', (yargsBuilder: any) => {
         yargsBuilder.positional('state', {
             type: 'string',
             demandOption: true,
-            describe: 'Name of the state'
+            describe: 'Name of the states'
         })
     }, getStats)
+    .command('slots <state>', 'To get the slots for 18+', (yargsBuilder: any) => {
+        yargsBuilder.positional('state', {
+            type: 'string',
+            demandOption: true,
+            describe: 'Name of the states'
+        })
+    }, getSlotsFor18Plus)
     .option('district', {
         alias: 'dt',
         type: 'string',

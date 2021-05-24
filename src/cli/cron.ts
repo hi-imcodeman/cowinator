@@ -1,6 +1,6 @@
 import cron from 'node-cron'
 import { Cowinator } from '../index'
-import { getStats } from './api'
+import { getStats, getSlotsFor18Plus } from './api'
 // import moment from 'moment'
 
 const client = new Cowinator()
@@ -12,6 +12,7 @@ const sleep = (ms: number) => {
 }
 
 cron.schedule('0 * * * *', async () => {
+    console.log('Cron started.')
     const tgChannel='@cowinator_tamilnadu'
     const state = await client.findStateByName('tamil nadu')
     if (state) {
@@ -20,7 +21,7 @@ cron.schedule('0 * * * *', async () => {
         let i = 0;
         while (i < districtsList.length) {
             const { district_name } = districtsList[i]
-            getStats({
+            getSlotsFor18Plus({
                 state: state_name,
                 district: district_name,
                 tgChannel
@@ -36,6 +37,7 @@ cron.schedule('0 * * * *', async () => {
 });
 
 cron.schedule('30 * * * *', async () => {
+    console.log('Cron started.')
     const tgChannel='@cowinator_karnataka'
     const state = await client.findStateByName('karnataka')
     if (state) {
@@ -44,7 +46,7 @@ cron.schedule('30 * * * *', async () => {
         let i = 0;
         while (i < districtsList.length) {
             const { district_name } = districtsList[i]
-            getStats({
+            getSlotsFor18Plus({
                 state: state_name,
                 district: district_name,
                 tgChannel
@@ -58,3 +60,4 @@ cron.schedule('30 * * * *', async () => {
         })
     }
 });
+

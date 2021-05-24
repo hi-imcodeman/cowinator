@@ -79,6 +79,31 @@ export class Cowinator {
         return sessions
     }
 
+    async findCalenderByDistrict(districtId: number, date: Date = new Date()): Promise<any[]> {
+        const dateStr = moment(date).format('DD-MM-YYYY')
+        const { centers } = await this.getData(
+            `/api/v2/appointment/sessions/public/calendarByDistrict?district_id=${districtId}&date=${dateStr}`)
+        return centers
+    }
+
+    async getAvailabilityFor18Plus(districtId: number, date: Date = new Date()) {
+        const centers = await this.findCalenderByDistrict(districtId, date)
+        const centerFor18Plus = centers.filter(center => {
+            const sessionsFor18Plus = center.sessions.filter((session: { min_age_limit: number }) => session.min_age_limit === 18)
+            if (sessionsFor18Plus.length)
+                return true
+        })
+        const availableCentersFor18Plus = centerFor18Plus.filter(center => {
+            const availableSessions = center.sessions.filter((session: { min_age_limit: number; available_capacity: number }) => session.min_age_limit === 18 && session.available_capacity > 0)
+            if (availableSessions.length)
+                return true
+        })
+        return {
+            centerFor18Plus,
+            availableCentersFor18Plus
+        }
+    }
+
     async findStateByName(query: string) {
         const states = await this.getStates()
         const idx = lunr(function () {
