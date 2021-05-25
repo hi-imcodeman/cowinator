@@ -99,6 +99,7 @@ export class Cowinator {
                 return true
         })
         return {
+            totalCenters: centers.length,
             centerFor18Plus,
             availableCentersFor18Plus
         }
