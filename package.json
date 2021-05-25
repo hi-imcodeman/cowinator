@@ -10,6 +10,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
+    "cron": "node build/cli/cron.js",
     "compile": "webpack",
     "docs": "typedoc",
     "test": "jest",
