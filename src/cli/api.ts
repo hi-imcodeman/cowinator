@@ -122,7 +122,6 @@ export const getSlotsFor18Plus = async (argv: any) => {
             let for18Plus = null
             const tgMessages: string[] = []
             if (matchedDistrict) {
-                console.log('Fetching for', matchedDistrict.district_name);
                 for18Plus = await cowin.getAvailabilityFor18Plus(matchedDistrict.district_id, date)
                 if (for18Plus.availableCentersFor18Plus.length) {
                     tgMessages.push(`${symbolFor18Plus}<b>Vaccine availability (18+) - ${matchedDistrict.district_name}, ${matchedState.state_name}</b>\n`)
@@ -143,7 +142,12 @@ export const getSlotsFor18Plus = async (argv: any) => {
                         })
                         tgMessages.push(`\n`)
                     })
-                } else {
+                }
+                else if(for18Plus.centerFor18Plus.length){
+                    tgMessages.push(`&#10060;<b>Vaccine availability (18+) - ${matchedDistrict.district_name}, ${matchedState.state_name}</b>\n`)
+                    tgMessages.push(`There is <b><u>${for18Plus.centerFor18Plus.length} center</u></b> for 18+, but no slots are available now.`)
+                }
+                else {
                     // tgMessages.push(`&#10060;<b>Vaccine availability (18+) - ${matchedDistrict.district_name}, ${matchedState.state_name}</b>\n`)
                     // tgMessages.push(`As of now, No slots available for 18+ at <b>${matchedDistrict.district_name}, ${matchedState.state_name}</b>\n`)
                 }
@@ -151,8 +155,8 @@ export const getSlotsFor18Plus = async (argv: any) => {
 
             console.log({
                 district: matchedDistrict?.district_name,
-                noCenters: for18Plus?.centerFor18Plus.length,
-                noAvalableCenters: for18Plus?.availableCentersFor18Plus.length
+                noOfCenters: for18Plus?.centerFor18Plus.length,
+                noOfAvalableCenters: for18Plus?.availableCentersFor18Plus.length
             })
             if (tgMessages.length && tgChannel) {
                 if (process.env.TELEGRAM_BOT_TOKEN) {

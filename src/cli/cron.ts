@@ -11,7 +11,7 @@ const sleep = (ms: number) => {
     })
 }
 
-cron.schedule('0 * * * *', async () => {
+cron.schedule('0,30 * * * *', async () => {
     console.log('Cron started.')
     const tgChannel='@cowinator_tamilnadu'
     const state = await client.findStateByName('tamil nadu')
@@ -27,16 +27,13 @@ cron.schedule('0 * * * *', async () => {
                 tgChannel
             })
             i++
-            await sleep(15000)
+            await sleep(5000)
         }
-        getStats({
-            state: state_name,
-            tgChannel
-        })
+        console.log(`Done for ${state_name}`);
     }
 });
 
-cron.schedule('30 * * * *', async () => {
+cron.schedule('15,45 * * * *', async () => {
     console.log('Cron started.')
     const tgChannel='@cowinator_karnataka'
     const state = await client.findStateByName('karnataka')
@@ -52,12 +49,31 @@ cron.schedule('30 * * * *', async () => {
                 tgChannel
             })
             i++
-            await sleep(15000)
+            await sleep(5000)
         }
-        getStats({
-            state: state_name,
-            tgChannel
-        })
+        console.log(`Done for ${state_name}`);
     }
 });
+
+// cron.schedule('57 * * * *', async () => {
+//     console.log('Cron started.')
+//     const tgChannel='@cowinatortest'
+//     const state = await client.findStateByName('andhra')
+//     if (state) {
+//         const { state_id, state_name } = state
+//         const districtsList = (await client.getDistricts(state_id))
+//         let i = 0;
+//         while (i < districtsList.length) {
+//             const { district_name } = districtsList[i]
+//             getSlotsFor18Plus({
+//                 state: state_name,
+//                 district: district_name,
+//                 tgChannel
+//             })
+//             i++
+//             await sleep(5000)
+//         }
+//         console.log(`Done for ${state_name}`);
+//     }
+// });
 
