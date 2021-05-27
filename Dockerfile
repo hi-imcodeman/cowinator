@@ -7,4 +7,4 @@ COPY tsconfig.json ./
 ENV TZ="Asia/Kolkata"
 RUN yarn install
 RUN yarn build
-CMD yarn cron
+CMD yarn dockerEntrypoint

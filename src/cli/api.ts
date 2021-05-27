@@ -1,6 +1,6 @@
 import { Cowinator } from '../index'
-import { TelegramClient } from 'messaging-api-telegram'
-import { ParseMode } from 'messaging-api-telegram/dist/TelegramTypes'
+import { sendTgHtmlMessage, testChannelId } from '../telegram'
+import moment from 'moment'
 
 const objToMessage = (title: string, obj: any, messages: string[]) => {
     messages.push(`\n<u><b>${title}:</b></u>`)
@@ -83,8 +83,7 @@ export const getStats = async (argv: any) => {
             if (stats && tgChannel) {
                 if (process.env.TELEGRAM_BOT_TOKEN) {
                     tgMessages.push(`\n\n<i>Pulled at: ${new Date()}</i>`)
-                    const tgClient = new TelegramClient({ accessToken: process.env.TELEGRAM_BOT_TOKEN })
-                    await tgClient.sendMessage(tgChannel, tgMessages.join('\n'), { parseMode: ParseMode.HTML })
+                    sendTgHtmlMessage(tgChannel, tgMessages.join('\n'))
                     console.log(`Message sent to telegram channel "${tgChannel}".`);
                 } else {
                     console.log(`"TELEGRAM_BOT_TOKEN" environmental variable not available.`);
@@ -95,10 +94,7 @@ export const getStats = async (argv: any) => {
         }
     } catch (error) {
         console.error(error)
-        if (process.env.TELEGRAM_BOT_TOKEN) {
-            const tgClient = new TelegramClient({ accessToken: process.env.TELEGRAM_BOT_TOKEN })
-            tgClient.sendMessage('@cowinatortest', `&#10060; <b>Error - Get Stats\n\nError:</b> ${error.message}\n\n${JSON.stringify(argv)}`,{ parseMode: ParseMode.HTML })
-        }
+        sendTgHtmlMessage(testChannelId, `&#10060; <b>Error - Get Stats\n\nError:</b> ${error.message}\n\n${JSON.stringify(argv)}`)
     }
 }
 
@@ -125,32 +121,34 @@ export const getSlotsFor18Plus = async (argv: any) => {
                 for18Plus = await cowin.getAvailabilityFor18Plus(matchedDistrict.district_id, date)
                 if (for18Plus.availableCentersFor18Plus.length) {
                     tgMessages.push(`${symbolFor18Plus}<b>Vaccine availability (18+) - ${matchedDistrict.district_name}, ${matchedState.state_name}</b>\n`)
-                    tgMessages.push(`There is <b><u>${for18Plus.centerFor18Plus.length} / ${for18Plus.totalCenters} centers</u></b> for 18+, but only <b><u>${for18Plus.availableCentersFor18Plus.length} center</u></b> having slots as of now.\n`)
+                    tgMessages.push(`There is <b><u>${for18Plus.centerFor18Plus.length} / ${for18Plus.totalCenters} centers</u></b> for 18+, but only <b><u>${for18Plus.availableCentersFor18Plus.length} center</u></b> having slots as of now.`)
                     for18Plus.availableCentersFor18Plus.forEach(center => {
-                        tgMessages.push(`&#128073;<b><u>${center.name}</u></b>`)
+                        tgMessages.push(`\n&#128073;<b><u>${center.name}</u></b>`)
                         tgMessages.push(`${center.address}`)
                         tgMessages.push(`${center.block_name} - ${center.pincode}`)
                         if (center.vaccine_fees && center.vaccine_fees.length && center.fee_type === 'Paid') {
-                            tgMessages.push(`<b>Fees:</b> ${center.vaccine_fees.map((item: { vaccine: string; fee: string }) => item.vaccine + ' - Rs.' + item.fee).join(', ')}\n`)
+                            tgMessages.push(`<b>Fees:</b> ${center.vaccine_fees.map((item: { vaccine: string; fee: string }) => item.vaccine + ' - Rs.' + item.fee).join(', ')}`)
                         } else {
-                            tgMessages.push(`<b>Type:</b> ${center.fee_type}\n`)
+                            tgMessages.push(`<b>Type:</b> ${center.fee_type}`)
                         }
 
                         center.sessions.forEach((session: any) => {
                             if (session.available_capacity > 0) {
-                                tgMessages.push(`<b><u>${session.date}:</u></b> ${session.available_capacity} (${session.vaccine})`)
+                                tgMessages.push(`\n<b><u>${session.date}:</u></b> ${session.available_capacity} | ${session.vaccine}`)
+                                if (session.available_capacity_dose1 > 0){
+                                    tgMessages.push(`<b>1st Dose:</b> ${session.available_capacity_dose1}`)
+                                }
+                                if (session.available_capacity_dose2 > 0){
+                                    tgMessages.push(`<b>2nd Dose:</b> ${session.available_capacity_dose2}`)
+                                }
                             }
                         })
-                        tgMessages.push(`\n`)
+
                     })
                 }
-                else if(for18Plus.centerFor18Plus.length){
+                else if (for18Plus.centerFor18Plus.length) {
                     tgMessages.push(`&#10060;<b>Vaccine availability (18+) - ${matchedDistrict.district_name}, ${matchedState.state_name}</b>\n`)
                     tgMessages.push(`There is <b><u>${for18Plus.centerFor18Plus.length} / ${for18Plus.totalCenters} centers</u></b> for 18+, but no slots are available now.`)
-                }
-                else {
-                    // tgMessages.push(`&#10060;<b>Vaccine availability (18+) - ${matchedDistrict.district_name}, ${matchedState.state_name}</b>\n`)
-                    // tgMessages.push(`As of now, No slots available for 18+ at <b>${matchedDistrict.district_name}, ${matchedState.state_name}</b>\n`)
                 }
             }
 
@@ -161,9 +159,8 @@ export const getSlotsFor18Plus = async (argv: any) => {
             })
             if (tgMessages.length && tgChannel) {
                 if (process.env.TELEGRAM_BOT_TOKEN) {
-                    tgMessages.push(`\n<i>Pulled at: ${new Date()}</i>`)
-                    const tgClient = new TelegramClient({ accessToken: process.env.TELEGRAM_BOT_TOKEN })
-                    await tgClient.sendMessage(tgChannel, tgMessages.join('\n'), { parseMode: ParseMode.HTML })
+                    tgMessages.push(`\n<i>Pulled at: ${moment().format('h:m a')}</i>`)
+                    sendTgHtmlMessage(tgChannel, tgMessages.join('\n'))
                     console.log(`Message sent to telegram channel "${tgChannel}".`);
                 } else {
                     console.log(`"TELEGRAM_BOT_TOKEN" environmental variable not available.`);
@@ -174,9 +171,6 @@ export const getSlotsFor18Plus = async (argv: any) => {
         }
     } catch (error) {
         console.error(error)
-        if (process.env.TELEGRAM_BOT_TOKEN) {
-            const tgClient = new TelegramClient({ accessToken: process.env.TELEGRAM_BOT_TOKEN })
-            tgClient.sendMessage('@cowinatortest', `&#10060; <b>Error - Get Slots for 18+\n\nError:</b> ${error.message}\n\n${JSON.stringify(argv)}`,{ parseMode: ParseMode.HTML })
-        }
+        sendTgHtmlMessage(testChannelId, `&#10060; <b>Error - Get Stats\n\nError:</b> ${error.message}\n\n${JSON.stringify(argv)}`)
     }
 }
