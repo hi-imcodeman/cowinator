@@ -200,6 +200,7 @@ export class Cowinator {
                     address,
                     block_name,
                     district_name,
+                    state_name,
                     pincode,
                     available_capacity,
                     available_capacity_dose1,

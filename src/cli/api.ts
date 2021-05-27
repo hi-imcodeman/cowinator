@@ -97,7 +97,45 @@ export const getStats = async (argv: any) => {
         sendTgHtmlMessage(testChannelId, `&#10060; <b>Error - Get Stats\n\nError:</b> ${error.message}\n\n${JSON.stringify(argv)}`)
     }
 }
+export const formatMessage18Plus = (for18Plus: any) => {
+    const tgMessages: string[] = []
+    const symbolFor18Plus = '&#9989;'
+    if (for18Plus.availableCentersFor18Plus.length) {
+        tgMessages.push(`${symbolFor18Plus}<b>Vaccine availability (18+) - ${for18Plus.centerFor18Plus[0].district_name}, ${for18Plus.centerFor18Plus[0].state_name}</b>\n`)
+        tgMessages.push(`There is <b><u>${for18Plus.centerFor18Plus.length} / ${for18Plus.totalCenters} centers</u></b> for 18+, but only <b><u>${for18Plus.availableCentersFor18Plus.length} center</u></b> having slots as of now.`)
+        for18Plus.availableCentersFor18Plus.forEach((center: any) => {
+            tgMessages.push(`\n&#128073;<b><u>${center.name}</u></b>`)
+            tgMessages.push(`${center.address}`)
+            tgMessages.push(`${center.block_name} - ${center.pincode}`)
+            if (center.vaccine_fees && center.vaccine_fees.length && center.fee_type === 'Paid') {
+                tgMessages.push(`<b>Fees:</b> ${center.vaccine_fees.map((item: { vaccine: string; fee: string }) => item.vaccine + ' - Rs.' + item.fee).join(', ')}`)
+            } else {
+                tgMessages.push(`<b>Type:</b> ${center.fee_type}`)
+            }
 
+            center.sessions.forEach((session: any) => {
+                if (session.available_capacity > 0) {
+                    tgMessages.push(`\n<b><u>${session.date}:</u></b> ${session.available_capacity} | ${session.vaccine}`)
+                    if (session.available_capacity_dose1 > 0) {
+                        tgMessages.push(`<b>1st Dose:</b> ${session.available_capacity_dose1}`)
+                    }
+                    if (session.available_capacity_dose2 > 0) {
+                        tgMessages.push(`<b>2nd Dose:</b> ${session.available_capacity_dose2}`)
+                    }
+                }
+            })
+
+        })
+    }
+    else if (for18Plus.centerFor18Plus.length) {
+        tgMessages.push(`&#10060;<b>Vaccine availability (18+) - ${for18Plus.centerFor18Plus[0].district_name}, ${for18Plus.centerFor18Plus[0].state_name}</b>\n`)
+        tgMessages.push(`There is <b><u>${for18Plus.centerFor18Plus.length} / ${for18Plus.totalCenters} centers</u></b> for 18+, but no slots are available now.`)
+    }
+    if (tgMessages.length)
+        tgMessages.push(`\n<i>Pulled at: ${moment().format('hh:mm a')}</i>`)
+    
+    return tgMessages.join('\n')
+}
 export const getSlotsFor18Plus = async (argv: any) => {
     try {
         const { state, district, tgChannel, d } = argv
@@ -105,67 +143,34 @@ export const getSlotsFor18Plus = async (argv: any) => {
         if (d) {
             date = new Date(d)
         }
-        const symbolFor18Plus = '&#9989;'
         const matchedState = await cowin.findStateByName(state)
         if (matchedState) {
             let matchedDistrict = null
+            let messageForTg = ''
             if (district) {
                 matchedDistrict = await cowin.findDistrictByName(matchedState.state_id, district)
                 if (matchedDistrict === null) {
                     console.log(`Entered district "${district}" not matched with CoWin distict list of "${matchedState.state_name}".`);
                 }
             }
-            let for18Plus = null
-            const tgMessages: string[] = []
             if (matchedDistrict) {
-                for18Plus = await cowin.getAvailabilityFor18Plus(matchedDistrict.district_id, date)
-                if (for18Plus.availableCentersFor18Plus.length) {
-                    tgMessages.push(`${symbolFor18Plus}<b>Vaccine availability (18+) - ${matchedDistrict.district_name}, ${matchedState.state_name}</b>\n`)
-                    tgMessages.push(`There is <b><u>${for18Plus.centerFor18Plus.length} / ${for18Plus.totalCenters} centers</u></b> for 18+, but only <b><u>${for18Plus.availableCentersFor18Plus.length} center</u></b> having slots as of now.`)
-                    for18Plus.availableCentersFor18Plus.forEach(center => {
-                        tgMessages.push(`\n&#128073;<b><u>${center.name}</u></b>`)
-                        tgMessages.push(`${center.address}`)
-                        tgMessages.push(`${center.block_name} - ${center.pincode}`)
-                        if (center.vaccine_fees && center.vaccine_fees.length && center.fee_type === 'Paid') {
-                            tgMessages.push(`<b>Fees:</b> ${center.vaccine_fees.map((item: { vaccine: string; fee: string }) => item.vaccine + ' - Rs.' + item.fee).join(', ')}`)
-                        } else {
-                            tgMessages.push(`<b>Type:</b> ${center.fee_type}`)
-                        }
-
-                        center.sessions.forEach((session: any) => {
-                            if (session.available_capacity > 0) {
-                                tgMessages.push(`\n<b><u>${session.date}:</u></b> ${session.available_capacity} | ${session.vaccine}`)
-                                if (session.available_capacity_dose1 > 0){
-                                    tgMessages.push(`<b>1st Dose:</b> ${session.available_capacity_dose1}`)
-                                }
-                                if (session.available_capacity_dose2 > 0){
-                                    tgMessages.push(`<b>2nd Dose:</b> ${session.available_capacity_dose2}`)
-                                }
-                            }
-                        })
-
-                    })
-                }
-                else if (for18Plus.centerFor18Plus.length) {
-                    tgMessages.push(`&#10060;<b>Vaccine availability (18+) - ${matchedDistrict.district_name}, ${matchedState.state_name}</b>\n`)
-                    tgMessages.push(`There is <b><u>${for18Plus.centerFor18Plus.length} / ${for18Plus.totalCenters} centers</u></b> for 18+, but no slots are available now.`)
-                }
+                const for18Plus = await cowin.getAvailabilityFor18Plus(matchedDistrict.district_id, date)
+                messageForTg=formatMessage18Plus(for18Plus)
+                console.log({
+                    district: matchedDistrict?.district_name,
+                    noOfCenters: for18Plus?.centerFor18Plus.length,
+                    noOfAvalableCenters: for18Plus?.availableCentersFor18Plus.length
+                })
             }
-
-            console.log({
-                district: matchedDistrict?.district_name,
-                noOfCenters: for18Plus?.centerFor18Plus.length,
-                noOfAvalableCenters: for18Plus?.availableCentersFor18Plus.length
-            })
-            if (tgMessages.length && tgChannel) {
+            if (messageForTg && tgChannel) {
                 if (process.env.TELEGRAM_BOT_TOKEN) {
-                    tgMessages.push(`\n<i>Pulled at: ${moment().format('hh:mm a')}</i>`)
-                    sendTgHtmlMessage(tgChannel, tgMessages.join('\n'))
+                    sendTgHtmlMessage(tgChannel, messageForTg)
                     console.log(`Message sent to telegram channel "${tgChannel}".`);
                 } else {
                     console.log(`"TELEGRAM_BOT_TOKEN" environmental variable not available.`);
                 }
             }
+            return messageForTg
         } else {
             console.log(`Entered state "${state}" not matched with CoWin state list.`);
         }
