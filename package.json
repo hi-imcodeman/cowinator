@@ -10,7 +10,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "dockerEntrypoint": "node build/cli/dockerEntrypoint.js",
+    "dockerEntrypoint": "node build/dockerEntrypoint.js",
     "compile": "webpack",
     "docs": "typedoc",
     "test": "jest",
