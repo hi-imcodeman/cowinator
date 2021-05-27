@@ -159,7 +159,7 @@ export const getSlotsFor18Plus = async (argv: any) => {
             })
             if (tgMessages.length && tgChannel) {
                 if (process.env.TELEGRAM_BOT_TOKEN) {
-                    tgMessages.push(`\n<i>Pulled at: ${moment().format('h:m a')}</i>`)
+                    tgMessages.push(`\n<i>Pulled at: ${moment().format('hh:mm a')}</i>`)
                     sendTgHtmlMessage(tgChannel, tgMessages.join('\n'))
                     console.log(`Message sent to telegram channel "${tgChannel}".`);
                 } else {
