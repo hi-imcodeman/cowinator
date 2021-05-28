@@ -143,6 +143,7 @@ export const getSlotsFor18Plus = async (argv: any) => {
         if (d) {
             date = new Date(d)
         }
+        let errorMsg=null
         const matchedState = await cowin.findStateByName(state)
         if (matchedState) {
             let matchedDistrict = null
@@ -150,7 +151,8 @@ export const getSlotsFor18Plus = async (argv: any) => {
             if (district) {
                 matchedDistrict = await cowin.findDistrictByName(matchedState.state_id, district)
                 if (matchedDistrict === null) {
-                    console.log(`Entered district "${district}" not matched with CoWin distict list of "${matchedState.state_name}".`);
+                    errorMsg = `Entered district "${district}" not matched with CoWin district list of "${matchedState.state_name}".`
+                    console.log(errorMsg);
                 }
             }
             if (matchedDistrict) {
@@ -170,9 +172,19 @@ export const getSlotsFor18Plus = async (argv: any) => {
                     console.log(`"TELEGRAM_BOT_TOKEN" environmental variable not available.`);
                 }
             }
-            return messageForTg
+            return {
+                message: messageForTg,
+                errorMsg,
+                matchedDistrict,
+                matchedState
+            }
         } else {
-            console.log(`Entered state "${state}" not matched with CoWin state list.`);
+            errorMsg=`Entered state "${state}" not matched with CoWin state list.`
+            console.log(errorMsg);
+            return {
+                message: '',
+                errorMsg
+            }
         }
     } catch (error) {
         console.error(error)
