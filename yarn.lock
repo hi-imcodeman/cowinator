@@ -2192,6 +2192,13 @@ ignore@^5.1.4:
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.1.8.tgz#f150a8b50a34289b33e22f5889abd4d8016f0e57"
   integrity sha512-BMpfD7PpiETpBl/A6S498BaIJ6Y/ABT93ETbby2fP00v4EbvPBXWEoaR1UBPKs3iR53pJY7EtZk5KACI57i1Uw==
 
+image-charts@^5.6.17:
+  version "5.6.17"
+  resolved "https://registry.yarnpkg.com/image-charts/-/image-charts-5.6.17.tgz#9f2c5e1e679208cf698602a19b288e5ff1e49813"
+  integrity sha512-HoosCVDojqJKRtIiKmIN8WbAUDXfzRs6JkSziACahBb5DJpTin4xylNfq8iZgUZRc5vt4WNpXUjehtFdcvDvVA==
+  dependencies:
+    node-fetch "2.6.0"
+
 import-fresh@^3.0.0, import-fresh@^3.2.1:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/import-fresh/-/import-fresh-3.3.0.tgz#37162c25fcb9ebaa2e6e53d5b4d88ce17d9e0c2b"
@@ -3312,6 +3319,11 @@ node-cron@^3.0.0:
   integrity sha512-DDwIvvuCwrNiaU7HEivFDULcaQualDv7KoNlB/UU1wPW0n1tDEmBJKhEIE6DlF2FuoOHcNbLJ8ITL2Iv/3AWmA==
   dependencies:
     moment-timezone "^0.5.31"
+
+node-fetch@2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.0.tgz#e633456386d4aa55863f676a7ab0daa8fdecb0fd"
+  integrity sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==
 
 node-fetch@^2.6.1:
   version "2.6.1"

@@ -150,6 +150,7 @@ export class Cowinator {
             byBlock: {},
             byFeeType: {},
             byAge: {},
+            byDose:{},
             noOfCentersByAge: {},
             noOfCentersWithSlotsByAge: {},
             byVaccine: {},
@@ -189,6 +190,8 @@ export class Cowinator {
             stats.byBlock = addToExisting(stats.byBlock, block_name, available_capacity)
             stats.byFeeType = addToExisting(stats.byFeeType, fee_type, available_capacity)
             stats.byAge = addToExisting(stats.byAge, `${min_age_limit}+`, available_capacity)
+            stats.byDose = addToExisting(stats.byDose, 'Dose 1', available_capacity_dose1)
+            stats.byDose = addToExisting(stats.byDose, 'Dose 2', available_capacity_dose2)
             stats.noOfCentersByAge = addToExisting(stats.noOfCentersByAge, `${min_age_limit}+`, 1)
             stats.noOfCentersWithSlotsByAge = addToExisting(stats.noOfCentersWithSlotsByAge, `${min_age_limit}+`, available_capacity > 0 ? 1 : 0)
             stats.byVaccine = addToExisting(stats.byVaccine, vaccine, available_capacity)
