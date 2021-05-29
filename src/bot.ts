@@ -2,6 +2,7 @@ import { Context, Telegraf, session } from 'telegraf'
 import ImageCharts from 'image-charts'
 import { Cowinator } from './index'
 import { getSlotsFor18Plus } from './cli/api'
+import {sendTgHtmlMessage,testChannelId} from './telegram'
 
 interface SessionData {
     messageCount: number
@@ -82,6 +83,7 @@ if (process.env.TELEGRAM_BOT_TOKEN) {
     bot.start(async (ctx) => {
         await ctx.reply('Welcome to Cowinator Bot.\n')
         helpCallback(ctx)
+        sendTgHtmlMessage(testChannelId, `&#9989;<b><u>New user for chatbot:</u></b>\n${JSON.stringify(ctx.from)}`)
     })
     bot.help(helpCallback)
     bot.on('sticker', (ctx) => ctx.reply('👍'))

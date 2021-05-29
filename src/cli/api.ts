@@ -131,9 +131,11 @@ export const formatMessage18Plus = (for18Plus: any) => {
         tgMessages.push(`&#10060;<b>Vaccine availability (18+) - ${for18Plus.centerFor18Plus[0].district_name}, ${for18Plus.centerFor18Plus[0].state_name}</b>\n`)
         tgMessages.push(`There is <b><u>${for18Plus.centerFor18Plus.length} / ${for18Plus.totalCenters} centers</u></b> for 18+, but no slots are available now.`)
     }
-    if (tgMessages.length)
+    if (tgMessages.length) {
+        tgMessages.push(`\nTry this bot @CowinatorBot`)
         tgMessages.push(`\n<i>Pulled at: ${moment().format('hh:mm a')}</i>`)
-    
+    }
+
     return tgMessages.join('\n')
 }
 export const getSlotsFor18Plus = async (argv: any) => {
@@ -143,7 +145,7 @@ export const getSlotsFor18Plus = async (argv: any) => {
         if (d) {
             date = new Date(d)
         }
-        let errorMsg=null
+        let errorMsg = null
         const matchedState = await cowin.findStateByName(state)
         if (matchedState) {
             let matchedDistrict = null
@@ -157,7 +159,7 @@ export const getSlotsFor18Plus = async (argv: any) => {
             }
             if (matchedDistrict) {
                 const for18Plus = await cowin.getAvailabilityFor18Plus(matchedDistrict.district_id, date)
-                messageForTg=formatMessage18Plus(for18Plus)
+                messageForTg = formatMessage18Plus(for18Plus)
                 console.log({
                     district: matchedDistrict?.district_name,
                     noOfCenters: for18Plus?.centerFor18Plus.length,
@@ -179,7 +181,7 @@ export const getSlotsFor18Plus = async (argv: any) => {
                 matchedState
             }
         } else {
-            errorMsg=`Entered state "${state}" not matched with CoWin state list.`
+            errorMsg = `Entered state "${state}" not matched with CoWin state list.`
             console.log(errorMsg);
             return {
                 message: '',
