@@ -101,7 +101,7 @@ if (process.env.TELEGRAM_BOT_TOKEN) {
             }
             ctx.session.interval = setInterval(() => {
                 sendSlotsFor18Plus(ctx)
-            }, 1 * 10 * 1000)
+            }, 5 * 60 * 1000)
 
         }
     })
