@@ -2,7 +2,7 @@ import { Context, Telegraf, session } from 'telegraf'
 import ImageCharts from 'image-charts'
 import { Cowinator } from './index'
 import { getSlotsFor18Plus } from './cli/api'
-import {sendTgHtmlMessage,testChannelId} from './telegram'
+import { sendTgHtmlMessage, testChannelId } from './telegram'
 
 interface SessionData {
     messageCount: number
@@ -41,9 +41,11 @@ const sendSlotsFor18Plus = async (ctx: MyContext) => {
             state,
             district
         })
-        if (response?.message) {
+        if (response?.messages.length) {
             isSuccess = true
-            ctx.reply(response?.message, { parse_mode: 'HTML' })
+            response?.messages.forEach(msg => {
+                ctx.reply(msg, { parse_mode: 'HTML' })
+            })
         }
         else if (response?.matchedDistrict) {
             isSuccess = true
@@ -83,15 +85,17 @@ if (process.env.TELEGRAM_BOT_TOKEN) {
     bot.start(async (ctx) => {
         await ctx.reply('Welcome to Cowinator Bot.\n')
         helpCallback(ctx)
-        sendTgHtmlMessage(testChannelId, `&#9989;<b><u>New user for chatbot:</u></b>\n${JSON.stringify(ctx.from)}`)
+        sendTgHtmlMessage(testChannelId, `&#9989;<b><u>New user for chatbot:</u></b>\n\n${JSON.stringify(ctx.from)}`)
     })
     bot.help(helpCallback)
     bot.on('sticker', (ctx) => ctx.reply('👍'))
     bot.hears(/slots ([a-z\s]+),\s*([a-z\s]+)/i, async (ctx) => {
+        
         ctx.session ??= { messageCount: 0, state: '', district: '', interval: null }
         ctx.session.messageCount++
         const { match } = ctx
         const [_inputText, state, district] = match
+        sendTgHtmlMessage(testChannelId, `&#9989;<b><u>User pulling slots for ${district}, ${state}.</u></b>\n\n${JSON.stringify(ctx.from)}`)
         ctx.session.state = state
         ctx.session.district = district
         const isSuccess = await sendSlotsFor18Plus(ctx)
@@ -110,6 +114,7 @@ if (process.env.TELEGRAM_BOT_TOKEN) {
     bot.hears('/slots', helpCallback)
     bot.command(['off'], (ctx) => {
         if (ctx.session?.interval) {
+            sendTgHtmlMessage(testChannelId, `&#9989;<b><u>User disabled the subscribtion.</u></b>\n\n${JSON.stringify(ctx.from)}`)
             clearInterval(ctx.session.interval)
             ctx.session.interval = null
         }
@@ -119,6 +124,7 @@ if (process.env.TELEGRAM_BOT_TOKEN) {
         console.log('Pulling stats');
         const { match } = ctx
         const [_inputText, state, district] = match
+        sendTgHtmlMessage(testChannelId, `&#9989;<b><u>User pulling stats for ${district}, ${state}.</u></b>\n\n${JSON.stringify(ctx.from)}`)
         ctx.reply('Pulling stats... Please wait...')
         const matchedState = await cowin.findStateByName(state)
         if (matchedState) {

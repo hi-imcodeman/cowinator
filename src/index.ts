@@ -86,14 +86,19 @@ export class Cowinator {
         return centers
     }
 
-    async getAvailabilityFor18Plus(districtId: number, date: Date = new Date()) {
-        const centers = await this.findCalenderByDistrict(districtId, date)
-        const centerFor18Plus = centers.filter(center => {
+    async findCalenderByPin(pincode: number, date: Date = new Date()): Promise<any[]> {
+        const dateStr = moment(date).format('DD-MM-YYYY')
+        const { centers } = await this.getData(
+            `/api/v2/appointment/sessions/public/calendarByPin?pincode=${pincode}&date=${dateStr}`)
+        return centers
+    }
+    getCentersFor18Plus(centers:any){
+        const centerFor18Plus = centers.filter((center:any) => {
             const sessionsFor18Plus = center.sessions.filter((session: { min_age_limit: number }) => session.min_age_limit === 18)
             if (sessionsFor18Plus.length)
                 return true
         })
-        const availableCentersFor18Plus = centerFor18Plus.filter(center => {
+        const availableCentersFor18Plus = centerFor18Plus.filter((center:any) => {
             const availableSessions = center.sessions.filter((session: { min_age_limit: number; available_capacity: number }) => session.min_age_limit === 18 && session.available_capacity > 0)
             if (availableSessions.length)
                 return true
@@ -104,6 +109,10 @@ export class Cowinator {
             availableCentersFor18Plus
         }
     }
+    // async getAvailabilityFor18Plus(districtId: number, date: Date = new Date()) {
+    //     const centers = await this.findCalenderByDistrict(districtId, date)
+    //     return this.getCentersFor18Plus(centers)
+    // }
 
     async findStateByName(query: string) {
         const states = await this.getStates()
